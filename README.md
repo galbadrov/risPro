@@ -255,6 +255,142 @@ Ob ustvarjanju novega objekta razreda Recept konstruktor prejme tri vrednosti: n
 
 Te vrednosti shrani v ustrezne atribute objekta, s čimer zagotovi, da vsebuje vse bistvene informacije za predstavitev recepta.
 
+# -----------------------------------------
+# Analiza kakovosti kode in metrik projekta
+# -----------------------------------------
+
+To poročilo predstavlja rezultate statične analize projekta, pridobljene s pomočjo
+**SonarQube**, IntelliJ IDEA (Code Metrics) in JUnit testov.  
+Projekt vsebuje REST kontroler za delo z recepti ter obsežen nabor enotnih testov.
+
+---
+
+## 1. Povzetek kakovosti (SonarQube)
+
+Celoten projekt je opravil analizo kakovosti z oceno **A** na vseh področjih.
+
+### ✔ Quality Gate: **PASSED**
+Projekt izpolnjuje vse kriterije SonarQube Quality Gate.
+
+---
+
+## Reliability (zanesljivost)
+- **A – brez napak kritičnih nivojev**
+- Najdenih:  
+  - 1 × *INFO issue*  
+  - 0 × low  
+  - 0 × medium  
+  - 0 × high  
+  - 0 × blocker
+
+Reliability score kaže, da projekt nima dejanskih napak, ki bi vplivale na delovanje.
+
+---
+
+## Maintainability (vzdrževanje kode)
+- **A – ≤ 5 % tehničnega dolga**
+- Projekt ima zelo nizko kompleksnost in minimalne code-smell nepravilnosti.
+
+Maintainability je visoka zaradi:
+- majhnega števila razredov,
+- enostavne logike,
+- dobrega razmerja med LOC in kompleksnostjo.
+
+---
+
+## Security (varnost)
+- **A – brez ranljivosti**
+- Število varnostnih problemov:
+  - 1 × *INFO-level hotspot*  
+  - 0 kritičnih ali visoko tveganih ranljivosti
+
+Projekt je varen in ne vsebuje tveganih konstrukcij ali nepreverjenega dostopa.
+
+---
+
+# 2. Statistika kode (LOC, CLOC, NCLOC)
+
+| Metrika | Vrednost |
+|--------|---------|
+| **Total LOC** | 224 |
+| **CLOC (comment lines)** | 19 |
+| **NCLOC (non-comment lines)** | 208 |
+| **RLOC (rational LOC / logic lines)** | povprečno 6.36% na metodo |
+
+Interpretacija:  
+Koda je kompaktna, jedrnata in z malo podvajanja.  
+Testna koda predstavlja večino obstoječih metod, kar je pozitivno.
+
+---
+
+# 3. Kompleksnost metod
+
+### Ciklomatična kompleksnost (v(G)) – najpomembnejši kazalnik
+- Povprečje: **1.14**
+- Najvišja vrednost: **4** (pri metodi `Recept.staEnaka()`)
+
+Interpretacija:
+- Kompleksnost 1 pomeni *linearna logika brez brananja*.
+- Kompleksnost 4 pomeni lahkotno pogojno strukturo (if/else), kar je popolnoma sprejemljivo.
+
+### Kognitivna kompleksnost (CogC)
+- Povprečje: **0.14**
+- Najvišja vrednost: **2**
+
+Kognitivna kompleksnost je nizka, kar pomeni, da je koda preprosta za razumevanje.
+
+---
+
+# 4. Metrike razredov (CBO, DIT, LCOM, RFC, WMC)
+
+| Razred | CBO | DIT | LCOM | RFC | WMC |
+|--------|-----|-----|------|-----|-----|
+| `ReceptiRepository` | 0 | 1 | 1 | 0 | 0 |
+| `DemoApplication` | 1 | 1 | 0 | 2 | 1 |
+| `Recept` | 3 | 1 | 5 | 23 | 14 |
+| `InfoController` | 3 | 1 | 2 | 19 | 8 |
+| `VsiTestiTest` | 3 | 1 | 2 | 56 | 17 |
+| *Ostali testi* | 0 | 1 | 0 | 0 | 0 |
+| **Povprečje** | **1.80** | **1.00** | **2.00** | **16.67** | **8.00** |
+
+### Interpretacija ključnih metrik:
+
+#### **CBO (Coupling Between Objects)**  
+- Povprečje **1.80** pomeni zelo nizko vezanost med razredi → dobra modularnost.
+
+#### **DIT (Depth of Inheritance Tree)**  
+- Vsi razredi imajo DIT = 1 → projekt ne uporablja kompleksne dedne hierarhije.
+
+#### **LCOM (Lack of Cohesion of Methods)**  
+- Nekoliko višje vrednosti pri razredu `Recept` (5) nakazujejo na to,  
+  da razred vsebuje več nepovezanih metod.  
+  Vendar je to za model razred pričakovano.
+
+#### **RFC (Response for Class)**  
+- InfoController = 19 → zmerna kompleksnost (normalno za REST kontroler)
+- Testi = 56 → normalno, ker testni razred kliče veliko različnih metod
+
+#### **WMC (Weighted Method Count)**  
+- Povprečje = 8 → projekt je nizko kompleksnosti
+- Razred `Recept` ima 14 → zaradi več getter/setter metod in `staEnaka()` logike
+
+---
+
+# 5. JUnit testi
+
+- **15/15 testov uspešno opravljenih**
+- Pokritost funkcionalnosti je zelo dobra
+- Testi pokrivajo:
+  - pozitivne scenarije,
+  - robne primere,
+  - negativne scenarije (exception handling),
+  - vse CRUD metode kontrolerja.
+
+To močno izboljša kakovost kode in znižuje tveganje napak.
+
+---
+
+
 
 
 
