@@ -260,55 +260,11 @@ Te vrednosti shrani v ustrezne atribute objekta, s čimer zagotovi, da vsebuje v
 # -----------------------------------------
 
 To poročilo predstavlja rezultate statične analize projekta, pridobljene s pomočjo
-**SonarQube**, IntelliJ IDEA (Code Metrics) in JUnit testov.  
-Projekt vsebuje REST kontroler za delo z recepti ter obsežen nabor enotnih testov.
+IntelliJ IDEA (Code Metrics) in JUnit testov.
 
 ---
 
-## 1. Povzetek kakovosti (SonarQube)
-
-Celoten projekt je opravil analizo kakovosti z oceno **A** na vseh področjih.
-
-### ✔ Quality Gate: **PASSED**
-Projekt izpolnjuje vse kriterije SonarQube Quality Gate.
-
----
-
-## Reliability (zanesljivost)
-- **A – brez napak kritičnih nivojev**
-- Najdenih:  
-  - 1 × *INFO issue*  
-  - 0 × low  
-  - 0 × medium  
-  - 0 × high  
-  - 0 × blocker
-
-Reliability score kaže, da projekt nima dejanskih napak, ki bi vplivale na delovanje.
-
----
-
-## Maintainability (vzdrževanje kode)
-- **A – ≤ 5 % tehničnega dolga**
-- Projekt ima zelo nizko kompleksnost in minimalne code-smell nepravilnosti.
-
-Maintainability je visoka zaradi:
-- majhnega števila razredov,
-- enostavne logike,
-- dobrega razmerja med LOC in kompleksnostjo.
-
----
-
-## Security (varnost)
-- **A – brez ranljivosti**
-- Število varnostnih problemov:
-  - 1 × *INFO-level hotspot*  
-  - 0 kritičnih ali visoko tveganih ranljivosti
-
-Projekt je varen in ne vsebuje tveganih konstrukcij ali nepreverjenega dostopa.
-
----
-
-# 2. Statistika kode (LOC, CLOC, NCLOC)
+# 1. Statistika kode (LOC, CLOC, NCLOC)
 
 | Metrika | Vrednost |
 |--------|---------|
@@ -318,30 +274,31 @@ Projekt je varen in ne vsebuje tveganih konstrukcij ali nepreverjenega dostopa.
 | **RLOC (rational LOC / logic lines)** | povprečno 6.36% na metodo |
 
 Interpretacija:  
-Koda je kompaktna, jedrnata in z malo podvajanja.  
-Testna koda predstavlja večino obstoječih metod, kar je pozitivno.
+Projekt ima majhen obseg kode, nizko stopnjo podvajanja in dobro razmerje med
+komentarji in funkcionalno kodo.
 
 ---
 
-# 3. Kompleksnost metod
+# 2. Kompleksnost metod
 
-### Ciklomatična kompleksnost (v(G)) – najpomembnejši kazalnik
-- Povprečje: **1.14**
-- Najvišja vrednost: **4** (pri metodi `Recept.staEnaka()`)
+Analizirani so parametri:  
+- **Ciklomatična kompleksnost (v(G))**  
+- **Kognitivna kompleksnost (CogC)**  
+- Število skokov (ev(G), iv(G))
 
-Interpretacija:
-- Kompleksnost 1 pomeni *linearna logika brez brananja*.
-- Kompleksnost 4 pomeni lahkotno pogojno strukturo (if/else), kar je popolnoma sprejemljivo.
+### Povzetek:
+- Povprečna ciklomatična kompleksnost: **1.14**
+- Najvišja kompleksnost: **4** (v `Recept.staEnaka()`)
+- Povprečna kognitivna kompleksnost: **0.14**
+- Najvišja kognitivna kompleksnost: **2**
 
-### Kognitivna kompleksnost (CogC)
-- Povprečje: **0.14**
-- Najvišja vrednost: **2**
-
-Kognitivna kompleksnost je nizka, kar pomeni, da je koda preprosta za razumevanje.
+Interpretacija:  
+Koda je preprosta, linearna in enostavna za razumevanje.  
+Kompleksnost ≤4 kaže na minimalno pogojno logiko.
 
 ---
 
-# 4. Metrike razredov (CBO, DIT, LCOM, RFC, WMC)
+# 3. Metrike razredov (CBO, DIT, LCOM, RFC, WMC)
 
 | Razred | CBO | DIT | LCOM | RFC | WMC |
 |--------|-----|-----|------|-----|-----|
@@ -350,51 +307,40 @@ Kognitivna kompleksnost je nizka, kar pomeni, da je koda preprosta za razumevanj
 | `Recept` | 3 | 1 | 5 | 23 | 14 |
 | `InfoController` | 3 | 1 | 2 | 19 | 8 |
 | `VsiTestiTest` | 3 | 1 | 2 | 56 | 17 |
-| *Ostali testi* | 0 | 1 | 0 | 0 | 0 |
+| `TestEnakostReceptov` | 0 | 1 | 0 | 0 | 0 |
 | **Povprečje** | **1.80** | **1.00** | **2.00** | **16.67** | **8.00** |
 
-### Interpretacija ključnih metrik:
+### Razlaga:
 
 #### **CBO (Coupling Between Objects)**  
-- Povprečje **1.80** pomeni zelo nizko vezanost med razredi → dobra modularnost.
+- Povprečje 1.80 → nizka vezanost med razredi → dobra modularnost.
 
 #### **DIT (Depth of Inheritance Tree)**  
-- Vsi razredi imajo DIT = 1 → projekt ne uporablja kompleksne dedne hierarhije.
+- Vsi razredi imajo 1 → projekt ne uporablja zapletene dedne hierarhije.
 
 #### **LCOM (Lack of Cohesion of Methods)**  
-- Nekoliko višje vrednosti pri razredu `Recept` (5) nakazujejo na to,  
-  da razred vsebuje več nepovezanih metod.  
-  Vendar je to za model razred pričakovano.
+- Enotnost metod je večinoma dobra.  
+- Razred `Recept` ima LCOM 5, kar je pričakovano zaradi več getter/setter metod.
 
 #### **RFC (Response for Class)**  
-- InfoController = 19 → zmerna kompleksnost (normalno za REST kontroler)
-- Testi = 56 → normalno, ker testni razred kliče veliko različnih metod
+- `InfoController` = 19 → povprečna kompleksnost REST kontrolerja  
+- `VsiTestiTest` = 56 → normalno, saj testni razred kliče veliko različnih metod
 
 #### **WMC (Weighted Method Count)**  
-- Povprečje = 8 → projekt je nizko kompleksnosti
-- Razred `Recept` ima 14 → zaradi več getter/setter metod in `staEnaka()` logike
+- Povprečje = 8 → projekt je nizko kompleksnosti  
+- `Recept` = 14 → posledica lastnosti, metod in primerjalne logike (`staEnaka()`)
 
 ---
 
-# 5. JUnit testi
+# 4. JUnit testi
 
 - **15/15 testov uspešno opravljenih**
-- Pokritost funkcionalnosti je zelo dobra
 - Testi pokrivajo:
   - pozitivne scenarije,
   - robne primere,
-  - negativne scenarije (exception handling),
+  - scenarije z izjemo (exception handling),
   - vse CRUD metode kontrolerja.
 
-To močno izboljša kakovost kode in znižuje tveganje napak.
+To zagotavlja stabilnost in pravilnost implementacije.
 
 ---
-
-
-
-
-
-
-
-
-
